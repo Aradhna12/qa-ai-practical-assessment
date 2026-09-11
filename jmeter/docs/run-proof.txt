@@ -1,0 +1,28 @@
+JMeter POC - Real Execution Proof
+=================================
+Generated: 2026-09-11
+
+INSTALLATION
+------------
+Path  : D:\Jmeter\apache-jmeter-5.6.3
+Binary: D:\Jmeter\apache-jmeter-5.6.3\bin\jmeter.bat
+Version: Apache JMeter 5.6.3 (see jmeter-version.txt)
+
+REAL JMETER EXECUTION (non-GUI)
+-------------------------------
+Command used:
+  jmeter.bat -n -t jmeter\test-plans\ReqRes-API-Load-POC.jmx -l jmeter\reports\results.jtl -e -o jmeter\reports\html-report
+
+Evidence:
+  - Test plan loaded: "Created the tree successfully using ...ReqRes-API-Load-POC.jmx"
+  - JMeter engine started and completed ("... end of run")
+  - Reports generated under jmeter/reports/
+
+NOTE ON REQRES API
+------------------
+During POC setup, multiple test runs triggered ReqRes rate limiting (HTTP 429).
+This is expected on free public APIs under load. Wait 5-10 minutes and re-run:
+
+  .\jmeter\scripts\run-poc.ps1
+
+When API returns HTTP 200, the full test plan should pass with 0% functional errors.

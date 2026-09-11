@@ -9,3 +9,7 @@ node_modules/
 
 # Postman / Newman
 postman/reports/
+
+# JMeter
+jmeter/reports/
+jmeter.log
