@@ -2,6 +2,35 @@
 
 A practical proof-of-concept for API test automation using **Postman** and **Newman** (CLI runner).
 
+## Live showcase in Postman (Basic QA Automation)
+
+These were published into your Postman **My Workspace** for demo / assessment:
+
+| Asset | Link |
+|---|---|
+| **Collection** — `QA Basic API Automation - ReqRes` | [Open in Postman](https://go.postman.co/collection/40280682-33b12cf3-3086-4e72-a142-746a3cae6696) |
+| **Environment** — `ReqRes - Dev (QA Automation)` | [Open environment](https://go.postman.co/environment/40280682-bd2e6422-ff40-4d2b-b8a4-6b83e15bd2e3) |
+| **Public docs** | [View documentation](https://documenter-api.postman.tech/view/40280682/2sBYAys8ss) |
+| **Monitor** — daily 09:00 IST | [Open monitor](https://go.postman.co/monitor/40280682-1f1ad9b8-5e9b-4c60-bf43-d4cad892a202) |
+
+**How to demo in Postman GUI**
+
+1. Open the collection link above and select environment **ReqRes - Dev (QA Automation)**
+2. Run folder **03 - E2E Smoke Flow** via **Collection Runner** (best end-to-end demo)
+3. Or send **Login - Valid Credentials** and show green assertions in the **Test Results** tab
+4. Open **Monitor** results to show scheduled cloud runs
+
+Basic collection folders:
+
+```
+QA Basic API Automation - ReqRes
+├── 01 - Authentication     Valid + negative login (token chaining)
+├── 02 - Users CRUD         GET list/single, POST, PUT, DELETE
+└── 03 - E2E Smoke Flow     Login → list → get → create → delete
+```
+
+The repo also keeps a fuller Newman/CI POC (`ReqRes-API-Automation-POC`) with contracts, CSV data-driven tests, and GitHub Actions.
+
 ## What this POC covers
 
 | QA concept | Implementation |
