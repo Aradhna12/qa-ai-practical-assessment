@@ -12,7 +12,14 @@
     "postman:run:ci": "node -e \"require('fs').mkdirSync('postman/reports',{recursive:true})\" && newman run postman/collections/ReqRes-API-Automation-POC.postman_collection.json -e postman/environments/reqres-dev.postman_environment.json -r cli,junit --reporter-junit-export postman/reports/junit-results.xml",
     "postman:report": "node -e \"require('fs').mkdirSync('postman/reports',{recursive:true})\" && newman run postman/collections/ReqRes-API-Automation-POC.postman_collection.json -e postman/environments/reqres-dev.postman_environment.json -r cli,htmlextra --reporter-htmlextra-export postman/reports/htmlextra-report.html",
     "postman:screenshots": "npx playwright test tests/postman-screenshots.spec.ts --project=chromium",
-    "postman:screenshots:full": "npm run postman:report && npm run postman:screenshots"
+    "postman:screenshots:full": "npm run postman:report && npm run postman:screenshots",
+    "k8s:screenshots": "npx playwright test tests/kubernetes-screenshots.spec.ts --project=chromium",
+    "k8s:verify": "powershell -ExecutionPolicy Bypass -File kubernetes/scripts/qa-verify.ps1",
+    "jmeter:run": "powershell -ExecutionPolicy Bypass -File jmeter/scripts/run-poc.ps1",
+    "jmeter:verify": "powershell -ExecutionPolicy Bypass -File jmeter/scripts/qa-verify.ps1",
+    "jmeter:gui": "powershell -ExecutionPolicy Bypass -File jmeter/scripts/open-jmeter-gui.ps1",
+    "jmeter:report": "powershell -ExecutionPolicy Bypass -File jmeter/scripts/generate-html-report.ps1",
+    "jmeter:install": "powershell -ExecutionPolicy Bypass -File jmeter/scripts/install-to-pc-jmeter.ps1"
   },
   "keywords": [],
   "author": "",

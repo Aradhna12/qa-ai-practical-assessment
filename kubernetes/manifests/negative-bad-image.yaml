@@ -1,0 +1,27 @@
+# Negative test fixture for BASIC QA POC.
+# Apply this ONLY to demonstrate CrashLoopBackOff / ImagePullBackOff observation.
+# Do not leave this running in shared clusters.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bad-image-demo
+  namespace: qa-demo
+  labels:
+    app: bad-image-demo
+    test-type: negative
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bad-image-demo
+  template:
+    metadata:
+      labels:
+        app: bad-image-demo
+        test-type: negative
+    spec:
+      containers:
+        - name: bad
+          image: nginx:this-tag-does-not-exist-qa-poc
+          ports:
+            - containerPort: 80

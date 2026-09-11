@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BASIC Kubernetes QA POC — Visual Guide</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --border: #2d3a4d;
+      --text: #e7ecf3;
+      --muted: #9aa8bc;
+      --accent: #3d9cfd;
+      --ok: #3dd68c;
+      --warn: #f5a524;
+      --fail: #f31260;
+      --term: #0b1220;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: linear-gradient(180deg, #0b1220 0%, #121a27 100%);
+      color: var(--text);
+      line-height: 1.45;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+    h1 { font-size: 1.8rem; margin: 0 0 8px; }
+    .subtitle { color: var(--muted); margin-bottom: 28px; }
+    .badge {
+      display: inline-block;
+      background: #1e3a5f;
+      color: var(--accent);
+      border: 1px solid #2f5f98;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    section h2 {
+      margin: 0 0 6px;
+      font-size: 1.15rem;
+      color: #fff;
+    }
+    section p.desc { margin: 0 0 14px; color: var(--muted); font-size: 0.92rem; }
+    .grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 14px; align-items: start; }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+    .fail { color: var(--fail); font-weight: 600; }
+    .term {
+      background: var(--term);
+      border: 1px solid #243247;
+      border-radius: 10px;
+      overflow: hidden;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12.5px;
+    }
+    .term-bar {
+      background: #162033;
+      padding: 8px 12px;
+      color: var(--muted);
+      border-bottom: 1px solid #243247;
+      font-size: 11px;
+    }
+    .term-body { padding: 12px 14px; white-space: pre-wrap; color: #d7e2f2; }
+    .prompt { color: var(--ok); }
+    .cmd { color: #fff; }
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .fail { color: var(--fail); }
+    .muted { color: var(--muted); }
+    .checklist { margin: 0; padding-left: 18px; color: var(--text); }
+    .checklist li { margin: 6px 0; }
+    .pass-pill {
+      display: inline-block;
+      background: rgba(61,214,140,.12);
+      color: var(--ok);
+      border: 1px solid rgba(61,214,140,.35);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .fail-pill {
+      display: inline-block;
+      background: rgba(243,18,96,.12);
+      color: var(--fail);
+      border: 1px solid rgba(243,18,96,.35);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { border-bottom: 1px solid var(--border); padding: 8px 6px; text-align: left; }
+    th { color: var(--muted); font-weight: 600; }
+    .header-card {
+      background: linear-gradient(135deg, #152238, #1a2f4d);
+      border: 1px solid #2b4b73;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header-card" id="overview">
+      <span class="badge">BASIC LEVEL</span>
+      <span class="badge">QA / SDET</span>
+      <span class="badge">kubectl</span>
+      <h1>Kubernetes QA POC — Visual Guide</h1>
+      <p class="subtitle">
+        Basic cluster validation for Quality Engineers: deploy an app, verify pods/services,
+        check logs, scale, observe a negative failure, and clean up.
+      </p>
+      <table>
+        <tr><th>App</th><td>nginx-demo</td></tr>
+        <tr><th>Namespace</th><td>qa-demo</td></tr>
+        <tr><th>Replicas</th><td>2</td></tr>
+        <tr><th>Image</th><td>nginx:1.27-alpine</td></tr>
+        <tr><th>QA script</th><td>kubernetes/scripts/qa-verify.ps1</td></tr>
+      </table>
+    </div>
+
+    <section id="cluster-nodes">
+      <h2>01 — Cluster connectivity</h2>
+      <p class="desc">First QA gate: confirm the cluster is reachable and at least one node is Ready.</p>
+      <div class="term">
+        <div class="term-bar">PowerShell — kubectl get nodes -o wide</div>
+        <div class="term-body"><span class="prompt">PS D:\qa-ai-practical-assessment&gt;</span> <span class="cmd">kubectl get nodes -o wide</span>
+NAME                 STATUS   ROLES           AGE   VERSION   INTERNAL-IP    OS-IMAGE
+docker-desktop       <span class="ok">Ready</span>    control-plane   12m   v1.31.1   192.168.65.3   Docker Desktop
+<span class="ok">✔ Node Ready — cluster is usable for QA deploy checks</span></div>
+      </div>
+    </section>
+
+    <section id="namespace-apply">
+      <h2>02 — Create QA namespace &amp; apply manifests</h2>
+      <p class="desc">Isolate POC resources in <code>qa-demo</code>, then apply Deployment + Service.</p>
+      <div class="term">
+        <div class="term-bar">PowerShell — kubectl apply</div>
+        <div class="term-body"><span class="prompt">PS&gt;</span> <span class="cmd">kubectl apply -f kubernetes/manifests/namespace.yaml</span>
+namespace/qa-demo created
+
+<span class="prompt">PS&gt;</span> <span class="cmd">kubectl apply -f kubernetes/manifests/deployment.yaml</span>
+deployment.apps/nginx-demo created
+
+<span class="prompt">PS&gt;</span> <span class="cmd">kubectl apply -f kubernetes/manifests/service.yaml</span>
+service/nginx-demo created</div>
+      </div>
+    </section>
+
+    <section id="pods-ready">
+      <h2>03 — Verify pods are Running / Ready</h2>
+      <p class="desc">Core functional check: desired replicas available, containers ready, no CrashLoop.</p>
+      <div class="grid">
+        <div class="term">
+          <div class="term-bar">kubectl get pods -n qa-demo -o wide</div>
+          <div class="term-body">NAME                          READY   STATUS    RESTARTS   AGE   IP
+nginx-demo-6f8c9d7b4d-2xk9p   <span class="ok">1/1</span>     <span class="ok">Running</span>   0          45s   10.1.0.14
+nginx-demo-6f8c9d7b4d-9m2qw   <span class="ok">1/1</span>     <span class="ok">Running</span>   0          45s   10.1.0.15</div>
+        </div>
+        <div>
+          <ul class="checklist">
+            <li><span class="pass-pill">PASS</span> READY = 1/1 for both pods</li>
+            <li><span class="pass-pill">PASS</span> STATUS = Running</li>
+            <li><span class="pass-pill">PASS</span> RESTARTS = 0</li>
+            <li><span class="pass-pill">PASS</span> replica count = 2</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="deployment-service">
+      <h2>04 — Deployment &amp; Service health</h2>
+      <p class="desc">Confirm rollout finished and Service has endpoints.</p>
+      <div class="term">
+        <div class="term-bar">kubectl get deploy,svc,endpoints -n qa-demo</div>
+        <div class="term-body">NAME                         READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/nginx-demo   <span class="ok">2/2</span>     2            <span class="ok">2</span>           1m
+
+NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+service/nginx-demo   ClusterIP   10.96.120.44    &lt;none&gt;        80/TCP    1m
+
+NAME                   ENDPOINTS                     AGE
+endpoints/nginx-demo   <span class="ok">10.1.0.14:80,10.1.0.15:80</span>     1m
+
+<span class="ok">✔ Available=2 and endpoints populated — traffic path is healthy</span></div>
+      </div>
+    </section>
+
+    <section id="describe-logs">
+      <h2>05 — Describe resource &amp; inspect logs</h2>
+      <p class="desc">QA debug skills: events from describe + application log smoke check.</p>
+      <div class="grid">
+        <div class="term">
+          <div class="term-bar">kubectl describe deploy nginx-demo -n qa-demo</div>
+          <div class="term-body">Replicas: 2 desired | 2 updated | 2 total | 2 available
+Conditions:
+  Type           Status
+  Available      <span class="ok">True</span>
+  Progressing    <span class="ok">True</span>
+Events:
+  Normal  ScalingReplicaSet  Deployment scaled up to 2</div>
+        </div>
+        <div class="term">
+          <div class="term-bar">kubectl logs -n qa-demo -l app=nginx-demo --tail=5</div>
+          <div class="term-body"><span class="muted">/docker-entrypoint.sh: Configuration complete</span>
+<span class="muted">start worker processes</span>
+10.1.0.1 - - [11/Sep/2026] "GET / HTTP/1.1" 200</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="scale-rollout">
+      <h2>06 — Scale &amp; rollout verification</h2>
+      <p class="desc">Basic resilience check: scale replicas and wait for rollout success.</p>
+      <div class="term">
+        <div class="term-bar">kubectl scale &amp; rollout status</div>
+        <div class="term-body"><span class="prompt">PS&gt;</span> <span class="cmd">kubectl scale deploy/nginx-demo -n qa-demo --replicas=3</span>
+deployment.apps/nginx-demo scaled
+
+<span class="prompt">PS&gt;</span> <span class="cmd">kubectl rollout status deploy/nginx-demo -n qa-demo</span>
+Waiting for deployment "nginx-demo" rollout to finish: 2 of 3 updated replicas are available...
+deployment "nginx-demo" <span class="ok">successfully rolled out</span></div>
+      </div>
+    </section>
+
+    <section id="negative-test">
+      <h2>07 — Negative test (bad image)</h2>
+      <p class="desc">QA must also prove failure visibility: ImagePullBackOff / ErrImagePull.</p>
+      <div class="grid">
+        <div class="term">
+          <div class="term-bar">kubectl get pods -n qa-demo -l app=bad-image-demo</div>
+          <div class="term-body">NAME                             READY   STATUS             RESTARTS   AGE
+bad-image-demo-7c9f5d8b9-abc12   0/1     <span class="fail">ErrImagePull</span>       0          20s
+<span class="fail">or ImagePullBackOff</span></div>
+        </div>
+        <div>
+          <ul class="checklist">
+            <li><span class="fail-pill">DETECT</span> Pod not Ready</li>
+            <li><span class="fail-pill">DETECT</span> Image pull error in events</li>
+            <li><span class="pass-pill">PASS</span> Failure is observable via kubectl</li>
+            <li>Delete negative deploy after demo</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="qa-script-result">
+      <h2>08 — Automated QA script result</h2>
+      <p class="desc">Repeatable pass/fail gate for BASIC Kubernetes health checks.</p>
+      <div class="term">
+        <div class="term-bar">.\kubernetes\scripts\qa-verify.ps1</div>
+        <div class="term-body">=== BASIC K8s QA Verification ===
+
+<span class="ok">[PASS]</span> Cluster reachable (kubectl get nodes)
+<span class="ok">[PASS]</span> Namespace 'qa-demo' exists
+<span class="ok">[PASS]</span> Deployment 'nginx-demo' has available replicas
+<span class="ok">[PASS]</span> Ready replicas match desired (2/2)
+<span class="ok">[PASS]</span> All nginx-demo pods are Running
+<span class="ok">[PASS]</span> Service 'nginx-demo' exists
+<span class="ok">[PASS]</span> Service has endpoints
+<span class="ok">[PASS]</span> Rollout status successful
+<span class="ok">[PASS]</span> Pod logs readable (nginx-demo-6f8c9d7b4d-2xk9p)
+
+<span class="ok">QA RESULT: ALL CHECKS PASSED</span></div>
+      </div>
+    </section>
+
+    <section id="cleanup">
+      <h2>09 — Cleanup</h2>
+      <p class="desc">Good QA hygiene: remove POC resources when demo is finished.</p>
+      <div class="term">
+        <div class="term-bar">kubectl delete</div>
+        <div class="term-body"><span class="prompt">PS&gt;</span> <span class="cmd">kubectl delete -f kubernetes/manifests/negative-bad-image.yaml --ignore-not-found</span>
+<span class="prompt">PS&gt;</span> <span class="cmd">kubectl delete -f kubernetes/manifests/ --ignore-not-found</span>
+deployment.apps "nginx-demo" deleted
+service "nginx-demo" deleted
+namespace "qa-demo" deleted</div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
